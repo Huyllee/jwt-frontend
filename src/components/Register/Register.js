@@ -11,6 +11,15 @@ const Register = (props) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const defaultValidInput = {
+    isValidEmail: true,
+    isValidPhone: true,
+    isValidUsername: true,
+    isValidPassword: true,
+    isValidConfirmPassword: true,
+  };
+  const [objCheckInput, setObjCheckInput] = useState(defaultValidInput);
+
   let history = useHistory();
 
   const handleLogin = () => {
@@ -18,24 +27,44 @@ const Register = (props) => {
   };
 
   useEffect(() => {
-    // axios.get("http://localhost:8080/api/test-api").then((data) => {
+    // axios.get("http://localhost:8080/api/v1/test-api").then((data) => {
     //   console.log(data);
     // });
   }, []);
 
   const isValidInputs = () => {
-    if (!email || !password || !username || !phone) {
-      toast.error("Missing Params is required");
-      return false;
-    }
-    if (password !== confirmPassword) {
-      toast.error("Your password is not the same");
-      return false;
-    }
+    setObjCheckInput(defaultValidInput);
 
     let regx = /\S+@\S+\.\S+/;
     if (!regx.test(email)) {
       toast.error("Please enter a valid email address");
+      setObjCheckInput({ ...defaultValidInput, isValidEmail: false });
+      return false;
+    }
+
+    if (!email) {
+      toast.error("Email is required");
+      setObjCheckInput({ ...defaultValidInput, isValidEmail: false });
+      return false;
+    }
+    if (!username) {
+      toast.error("Username is required");
+      setObjCheckInput({ ...defaultValidInput, isValidUsername: false });
+      return false;
+    }
+    if (!phone) {
+      toast.error("Phone number is required");
+      setObjCheckInput({ ...defaultValidInput, isValidPhone: false });
+      return false;
+    }
+    if (!password) {
+      toast.error("Password is required");
+      setObjCheckInput({ ...defaultValidInput, isValidPassword: false });
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Your password is not the same");
+      setObjCheckInput({ ...defaultValidInput, isValidConfirmPassword: false });
       return false;
     }
 
@@ -43,9 +72,15 @@ const Register = (props) => {
   };
 
   const handleRegister = () => {
-    let userData = { email, username, password, phone, confirmPassword };
     let check = isValidInputs();
-    console.log(userData);
+    if (check) {
+      axios.post("http://localhost:8080/api/v1/register", {
+        email,
+        phone,
+        username,
+        password,
+      });
+    }
   };
 
   return (
@@ -68,7 +103,11 @@ const Register = (props) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email address"
-                className="form-control"
+                className={
+                  objCheckInput.isValidEmail
+                    ? "form-control"
+                    : "form-control is-invalid"
+                }
               />
             </div>
             <div className="form-group">
@@ -78,7 +117,11 @@ const Register = (props) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
-                className="form-control"
+                className={
+                  objCheckInput.isValidUsername
+                    ? "form-control"
+                    : "form-control is-invalid"
+                }
               />
             </div>
             <div className="form-group">
@@ -88,7 +131,11 @@ const Register = (props) => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Phone number"
-                className="form-control"
+                className={
+                  objCheckInput.isValidPhone
+                    ? "form-control"
+                    : "form-control is-invalid"
+                }
               />
             </div>
             <div className="form-group">
@@ -98,7 +145,11 @@ const Register = (props) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="form-control"
+                className={
+                  objCheckInput.isValidPassword
+                    ? "form-control"
+                    : "form-control is-invalid"
+                }
               />
             </div>
             <div className="form-group">
@@ -108,7 +159,11 @@ const Register = (props) => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter Password"
-                className="form-control"
+                className={
+                  objCheckInput.isValidConfirmPassword
+                    ? "form-control"
+                    : "form-control is-invalid"
+                }
               />
             </div>
             <button
