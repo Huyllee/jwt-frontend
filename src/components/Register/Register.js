@@ -1,12 +1,51 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Register.scss";
 import { useHistory } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Register = (props) => {
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   let history = useHistory();
 
   const handleLogin = () => {
     history.push("/login");
+  };
+
+  useEffect(() => {
+    // axios.get("http://localhost:8080/api/test-api").then((data) => {
+    //   console.log(data);
+    // });
+  }, []);
+
+  const isValidInputs = () => {
+    if (!email || !password || !username || !phone) {
+      toast.error("Missing Params is required");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Your password is not the same");
+      return false;
+    }
+
+    let regx = /\S+@\S+\.\S+/;
+    if (!regx.test(email)) {
+      toast.error("Please enter a valid email address");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleRegister = () => {
+    let userData = { email, username, password, phone, confirmPassword };
+    let check = isValidInputs();
+    console.log(userData);
   };
 
   return (
@@ -26,6 +65,8 @@ const Register = (props) => {
               <label>Email:</label>
               <input
                 type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email address"
                 className="form-control"
               />
@@ -34,6 +75,8 @@ const Register = (props) => {
               <label>Username:</label>
               <input
                 type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
                 className="form-control"
               />
@@ -42,6 +85,8 @@ const Register = (props) => {
               <label>Phone number:</label>
               <input
                 type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 placeholder="Phone number"
                 className="form-control"
               />
@@ -50,6 +95,8 @@ const Register = (props) => {
               <label>Password:</label>
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 className="form-control"
               />
@@ -58,11 +105,18 @@ const Register = (props) => {
               <label>Re-enter password:</label>
               <input
                 type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter Password"
                 className="form-control"
               />
             </div>
-            <button className="btn btn-primary">Register</button>
+            <button
+              className="btn btn-primary"
+              onClick={() => handleRegister()}
+            >
+              Register
+            </button>
 
             <hr />
             <div className="text-center">
