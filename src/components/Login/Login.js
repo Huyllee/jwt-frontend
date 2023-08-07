@@ -42,9 +42,16 @@ const Login = (props) => {
       };
       sessionStorage.setItem("account", JSON.stringify(data));
       history.push("/users");
+      window.location.reload();
     }
     if (res && res.data && +res.data.EC !== 0) {
       toast.error(res.data.EM);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      handleLogin();
     }
   };
 
@@ -82,6 +89,7 @@ const Login = (props) => {
               }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e)}
             />
             <button className="btn btn-primary" onClick={() => handleLogin()}>
               Login
