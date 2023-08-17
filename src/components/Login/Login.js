@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Login.scss";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -14,6 +14,15 @@ const Login = (props) => {
   const [objValidInput, setObjValidInput] = useState(defaultObjValidInput);
 
   let history = useHistory();
+
+  useEffect(() => {
+    let session = sessionStorage.getItem("account");
+    if (session) {
+      history.push("/");
+      window.location.reload();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCreateNewAccount = () => {
     history.push("/register");
