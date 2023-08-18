@@ -1,22 +1,29 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
 import { fetchAllUser } from "../../services/userService";
 
 const Users = () => {
   const [listUsers, setListUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentLimit, setCurrentLimit] = useState(2);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     fetchListUser();
-  }, []);
+  }, [currentPage]);
 
   const fetchListUser = async () => {
-    let res = await fetchAllUser();
+    let res = await fetchAllUser(currentPage, currentLimit);
     if (res && res.data && res.data.EC === 0) {
-      setListUsers(res.data.DT);
+      setListUsers(res.data.DT.users);
+      setTotalPages(res.data.DT.totalPages);
     }
   };
 
-  console.log(listUsers);
+  const handlePageClick = async (event) => {
+    setCurrentPage(+event.selected + 1);
+  };
 
   return (
     <div className="manage-users-container container">
@@ -38,58 +45,58 @@ const Users = () => {
               <th scope="col">Email</th>
               <th scope="col">Username</th>
               <th scope="col">Group</th>
+              <th scope="col">actions</th>
             </tr>
           </thead>
           <tbody>
             {listUsers && listUsers.length > 0 ? (
               <>
                 {listUsers.map((item, index) => (
-                  <tr key={`${item.userName}-${item.index}`}>
+                  <tr key={`${item.userName}-${index}`}>
                     <td>{index + 1}</td>
                     <td>{item.id}</td>
                     <td>{item.email}</td>
                     <td>{item.userName}</td>
                     <td>{item.Group ? item.Group.name : ""}</td>
+                    <td>
+                      <button className="btn btn-warning mx-3">Edit</button>
+                      <button className="btn btn-danger">Delete</button>
+                    </td>
                   </tr>
                 ))}
               </>
             ) : (
-              <tr>Not Found User</tr>
+              <tr>
+                <td>Not Found User</td>
+              </tr>
             )}
           </tbody>
         </table>
       </div>
-      <div className="user-footer">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination">
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">
-                1
-              </a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">
-                2
-              </a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">
-                3
-              </a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      {totalPages > 0 && (
+        <div className="user-footer">
+          <ReactPaginate
+            previousLabel="previous"
+            nextLabel="next"
+            breakLabel="..."
+            breakClassName="page-item"
+            breakLinkClassName="page-link"
+            pageCount={totalPages}
+            pageRangeDisplayed={4}
+            marginPagesDisplayed={2}
+            onPageChange={handlePageClick}
+            containerClassName="pagination justify-content-center"
+            pageClassName="page-item"
+            pageLinkClassName="page-link"
+            previousClassName="page-item"
+            previousLinkClassName="page-link"
+            nextClassName="page-item"
+            nextLinkClassName="page-link"
+            activeClassName="active"
+            renderOnZeroPageCount={null}
+          />
+        </div>
+      )}
     </div>
   );
 };
