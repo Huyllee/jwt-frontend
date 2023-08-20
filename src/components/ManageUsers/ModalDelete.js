@@ -5,7 +5,7 @@ import Modal from "react-bootstrap/Modal";
 const ModalDelete = (props) => {
   return (
     <>
-      <Modal show={props.show} onHide={props.handleClose}>
+      <Modal show={props.show} onHide={props.handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Modal title</Modal.Title>
         </Modal.Header>

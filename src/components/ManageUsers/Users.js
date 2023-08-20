@@ -4,6 +4,7 @@ import ReactPaginate from "react-paginate";
 import { deleteUser, fetchAllUser } from "../../services/userService";
 import { toast } from "react-toastify";
 import ModalDelete from "./ModalDelete";
+import ModalUser from "./ModalUser";
 
 const Users = () => {
   const [listUsers, setListUsers] = useState([]);
@@ -138,6 +139,8 @@ const Users = () => {
         handleConfirmDelete={handleConfirmDelete}
         dataUser={dataUser}
       />
+
+      <ModalUser />
     </>
   );
 };
