@@ -15,6 +15,8 @@ const Users = () => {
   const [isShowModal, setIsShowModal] = useState(false);
   const [dataUser, setDataUser] = useState([]);
 
+  const [isShowModalUser, setIsShowModalUser] = useState(false);
+
   useEffect(() => {
     fetchListUser();
   }, [currentPage]);
@@ -53,6 +55,10 @@ const Users = () => {
     }
   };
 
+  const onHideModalUser = () => {
+    setIsShowModalUser(false);
+  };
+
   return (
     <>
       <div className="manage-users-container container">
@@ -62,7 +68,12 @@ const Users = () => {
           </div>
           <div className="actions">
             <button className="btn btn-success">Refresh</button>
-            <button className="btn btn-primary">Add new user</button>
+            <button
+              className="btn btn-primary"
+              onClick={() => setIsShowModalUser(true)}
+            >
+              Add new user
+            </button>
           </div>
         </div>
         <div className="user-body">
@@ -140,7 +151,7 @@ const Users = () => {
         dataUser={dataUser}
       />
 
-      <ModalUser />
+      <ModalUser onHide={onHideModalUser} show={isShowModalUser} />
     </>
   );
 };
