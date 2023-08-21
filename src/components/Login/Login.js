@@ -44,7 +44,7 @@ const Login = (props) => {
     }
 
     let res = await loginUser(valueLogin, password);
-    if (res && res.data && +res.data.EC === 0) {
+    if (res && res && +res.EC === 0) {
       let data = {
         isAuth: true,
         token: "fake token",
@@ -53,8 +53,8 @@ const Login = (props) => {
       history.push("/users");
       window.location.reload();
     }
-    if (res && res.data && +res.data.EC !== 0) {
-      toast.error(res.data.EM);
+    if (res && res && +res.EC !== 0) {
+      toast.error(res.EM);
     }
   };
 

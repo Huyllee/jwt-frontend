@@ -69,11 +69,11 @@ const Register = (props) => {
     let check = isValidInputs();
     if (check) {
       let res = await registerNewUser(email, phone, username, password);
-      if (+res.data.EC === 0) {
-        toast.success(res.data.EM);
+      if (+res.EC === 0) {
+        toast.success(res.EM);
         history.push("/login");
       } else {
-        toast.error(res.data.EM);
+        toast.error(res.EM);
       }
     }
   };
