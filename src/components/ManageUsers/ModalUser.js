@@ -3,10 +3,15 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import _ from "lodash";
 import "./Users.scss";
-import { createNewUser, fetchAllGroup } from "../../services/userService";
+import {
+  createNewUser,
+  fetchAllGroup,
+  updateUser,
+} from "../../services/userService";
 import { toast } from "react-toastify";
 
 const ModalUser = (props) => {
+  const { action, dataModal } = props;
   const [userGroup, setUserGroup] = useState([]);
 
   const defaultUserData = {
@@ -36,6 +41,23 @@ const ModalUser = (props) => {
     getUserGroup();
   }, []);
 
+  useEffect(() => {
+    if (action === "UPDATE") {
+      setUserData({
+        ...dataModal,
+        group: dataModal.Group ? dataModal.Group.id : "",
+      });
+    }
+  }, [dataModal, action]);
+
+  useEffect(() => {
+    if (action === "CREATE") {
+      if (userGroup && userGroup.length > 0) {
+        setUserData({ ...userData, group: userGroup[0].id });
+      }
+    }
+  }, [action]);
+
   const getUserGroup = async () => {
     let res = await fetchAllGroup();
     if (res && res.data && res.data.EC === 0) {
@@ -55,6 +77,8 @@ const ModalUser = (props) => {
   };
 
   const checkValidateInput = () => {
+    if (action === "UPDATE") return true;
+
     setValidInput(defaultValidInput);
     let arr = ["email", "phone", "password", "group"];
     let check = true;
@@ -63,6 +87,7 @@ const ModalUser = (props) => {
         let _validInput = _.cloneDeep(defaultValidInput);
         _validInput[arr[i]] = false;
         setValidInput(_validInput);
+
         toast.error(`Empty input ${arr[i]}`);
         check = false;
         break;
@@ -74,25 +99,47 @@ const ModalUser = (props) => {
   const handleConfirm = async () => {
     let check = checkValidateInput();
     if (check) {
-      let res = await createNewUser({
-        ...userData,
-        groupId: userData["group"],
-      });
+      let res =
+        action === "CREATE"
+          ? await createNewUser({
+              ...userData,
+              groupId: userData["group"],
+            })
+          : await updateUser({
+              ...userData,
+              groupId: userData["group"],
+            });
       if (res && res.data && res.data.EC === 0) {
         toast.success(res.data.EM);
         props.onHide();
-        setUserData({ ...defaultUserData, group: userGroup[0].id });
-      } else {
+        setUserData({
+          ...defaultUserData,
+          group: userGroup && userGroup.length > 0 ? userGroup[0].id : "",
+        });
+      }
+      if (res && res.data && res.data.EC !== 0) {
+        let _validInput = _.cloneDeep(defaultValidInput);
+        _validInput[res.data.DT] = false;
+        setValidInput(_validInput);
+
         toast.error(res.data.EM);
       }
     }
   };
 
+  const handleCloseModal = () => {
+    props.onHide();
+    setUserData(defaultUserData);
+    setValidInput(defaultValidInput);
+  };
+
   return (
     <>
-      <Modal size="lg" show={props.show} onHide={props.onHide}>
+      <Modal size="lg" show={props.show} onHide={() => handleCloseModal()}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>
+            {props.action === "CREATE" ? "Create new user" : "Edit a user"}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="content-body row">
@@ -107,6 +154,7 @@ const ModalUser = (props) => {
                 type="email"
                 value={userData.email}
                 onChange={(e) => handleOnChange(e.target.value, "email")}
+                disabled={action === "UPDATE"}
               />
             </div>
             <div className="col-12 col-sm-6 form-group">
@@ -120,6 +168,7 @@ const ModalUser = (props) => {
                 type="text"
                 value={userData.phone}
                 onChange={(e) => handleOnChange(e.target.value, "phone")}
+                disabled={action === "UPDATE"}
               />
             </div>
             <div className="col-12 col-sm-6 form-group">
@@ -131,21 +180,24 @@ const ModalUser = (props) => {
                 onChange={(e) => handleOnChange(e.target.value, "userName")}
               />
             </div>
-            <div className="col-12 col-sm-6 form-group">
-              <label>
-                Password (<span className="red">*</span>)
-              </label>
-              <input
-                className={
-                  validInput.password
-                    ? "form-control"
-                    : "form-control is-invalid"
-                }
-                type="password"
-                value={userData.password}
-                onChange={(e) => handleOnChange(e.target.value, "password")}
-              />
-            </div>
+            {action === "CREATE" && (
+              <div className="col-12 col-sm-6 form-group">
+                <label>
+                  Password (<span className="red">*</span>)
+                </label>
+                <input
+                  className={
+                    validInput.password
+                      ? "form-control"
+                      : "form-control is-invalid"
+                  }
+                  type="password"
+                  value={userData.password}
+                  onChange={(e) => handleOnChange(e.target.value, "password")}
+                />
+              </div>
+            )}
+
             <div className="col-12 form-group">
               <label>Address</label>
               <input
@@ -160,6 +212,7 @@ const ModalUser = (props) => {
               <select
                 className="form-select"
                 onChange={(e) => handleOnChange(e.target.value, "gender")}
+                value={userData.gender}
               >
                 <option defaultValue="Male">Male</option>
                 <option value="Female">Female</option>
@@ -175,6 +228,7 @@ const ModalUser = (props) => {
                   validInput.phone ? "form-select" : "form-select is-invalid"
                 }
                 onChange={(e) => handleOnChange(e.target.value, "group")}
+                value={userData.group}
               >
                 {userGroup.length > 0 &&
                   userGroup.map((item, index) => (
@@ -187,7 +241,7 @@ const ModalUser = (props) => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={props.onHide}>
+          <Button variant="secondary" onClick={() => handleCloseModal()}>
             Close
           </Button>
           <Button variant="primary" onClick={() => handleConfirm()}>

@@ -16,6 +16,8 @@ const Users = () => {
   const [dataUser, setDataUser] = useState([]);
 
   const [isShowModalUser, setIsShowModalUser] = useState(false);
+  const [actionModalUser, setActionModalUser] = useState("CREATE");
+  const [dataModalUpdate, setDataModalUpdate] = useState({});
 
   useEffect(() => {
     fetchListUser();
@@ -41,22 +43,40 @@ const Users = () => {
   const handleClose = () => {
     setDataUser([]);
     setIsShowModal(false);
+    fetchListUser();
   };
 
   const handleConfirmDelete = async () => {
     let res = await deleteUser(dataUser.id);
     if (res && res.data.EC === 0) {
       setIsShowModal(false);
-      toast.success(res.data.EM);
       fetchListUser();
+      toast.success(res.data.EM);
     } else {
       setIsShowModal(false);
       toast.error(res.data.EM);
     }
   };
 
+  const handleCreateBtn = () => {
+    setActionModalUser("CREATE");
+    setIsShowModalUser(true);
+  };
+
   const onHideModalUser = () => {
     setIsShowModalUser(false);
+    setDataModalUpdate({});
+    fetchListUser();
+  };
+
+  const handleUpdateUser = (user) => {
+    setActionModalUser("UPDATE");
+    setDataModalUpdate(user);
+    setIsShowModalUser(true);
+  };
+
+  const handleRefresh = () => {
+    fetchListUser();
   };
 
   return (
@@ -64,15 +84,18 @@ const Users = () => {
       <div className="manage-users-container container">
         <div className="user-header">
           <div className="title">
-            <h3>Table Users</h3>
+            <h3>Manage Users</h3>
           </div>
           <div className="actions">
-            <button className="btn btn-success">Refresh</button>
+            <button className="btn btn-success" onClick={() => handleRefresh()}>
+              <i className="fa fa-refresh"></i> Refresh
+            </button>
             <button
+              style={{ float: "right" }}
               className="btn btn-primary"
-              onClick={() => setIsShowModalUser(true)}
+              onClick={() => handleCreateBtn()}
             >
-              Add new user
+              <i className="fa fa-plus-circle"></i> Add new user
             </button>
           </div>
         </div>
@@ -93,18 +116,23 @@ const Users = () => {
                 <>
                   {listUsers.map((item, index) => (
                     <tr key={`${item.userName}-${index}`}>
-                      <td>{index + 1}</td>
+                      <td>{(currentPage - 1) * currentLimit + index + 1}</td>
                       <td>{item.id}</td>
                       <td>{item.email}</td>
                       <td>{item.userName}</td>
                       <td>{item.Group ? item.Group.name : ""}</td>
                       <td>
-                        <button className="btn btn-warning mx-3">Edit</button>
+                        <button
+                          className="btn btn-warning mx-3"
+                          onClick={() => handleUpdateUser(item)}
+                        >
+                          <i className="fa fa-pencil"></i> Edit
+                        </button>
                         <button
                           className="btn btn-danger"
                           onClick={() => handleDeleteUser(item)}
                         >
-                          Delete
+                          <i className="fa fa-trash-o"></i> Delete
                         </button>
                       </td>
                     </tr>
@@ -151,7 +179,12 @@ const Users = () => {
         dataUser={dataUser}
       />
 
-      <ModalUser onHide={onHideModalUser} show={isShowModalUser} />
+      <ModalUser
+        onHide={onHideModalUser}
+        show={isShowModalUser}
+        action={actionModalUser}
+        dataModal={dataModalUpdate}
+      />
     </>
   );
 };
