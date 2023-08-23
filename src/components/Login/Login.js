@@ -3,8 +3,11 @@ import "./Login.scss";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loginUser } from "../../services/userService";
+import { UserContext } from "../../context/UserContext";
 
 const Login = (props) => {
+  const { loginContext } = React.useContext(UserContext);
+
   const [valueLogin, setValueLogin] = useState("");
   const [password, setPassword] = useState("");
   const defaultObjValidInput = {
@@ -45,13 +48,19 @@ const Login = (props) => {
 
     let res = await loginUser(valueLogin, password);
     if (res && res && +res.EC === 0) {
+      let groupWithRole = res.DT.groupWithRole;
+      let email = res.DT.email;
+      let userName = res.DT.userName;
+      let token = res.DT.access_token;
       let data = {
-        isAuth: true,
-        token: "fake token",
+        isAuthenticated: true,
+        token,
+        account: { groupWithRole, email, userName },
       };
+      loginContext(data);
       sessionStorage.setItem("account", JSON.stringify(data));
       history.push("/users");
-      window.location.reload();
+      // window.location.reload();
     }
     if (res && res && +res.EC !== 0) {
       toast.error(res.EM);
