@@ -18,15 +18,6 @@ const Login = (props) => {
 
   let history = useHistory();
 
-  useEffect(() => {
-    let session = sessionStorage.getItem("account");
-    if (session) {
-      history.push("/");
-      window.location.reload();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleCreateNewAccount = () => {
     history.push("/register");
   };
@@ -58,9 +49,7 @@ const Login = (props) => {
         account: { groupWithRole, email, userName },
       };
       loginContext(data);
-      sessionStorage.setItem("account", JSON.stringify(data));
       history.push("/users");
-      // window.location.reload();
     }
     if (res && res && +res.EC !== 0) {
       toast.error(res.EM);
