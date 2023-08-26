@@ -48,6 +48,7 @@ const Login = (props) => {
         token,
         account: { groupWithRole, email, userName },
       };
+      localStorage.setItem("jwt", token);
       loginContext(data);
       history.push("/users");
     }
