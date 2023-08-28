@@ -42,6 +42,10 @@ const fetchUserAccount = () => {
   return axios.get(`/api/v1/account`);
 };
 
+const logoutUser = (userData) => {
+  return axios.post(`/api/v1/logout`);
+};
+
 export {
   registerNewUser,
   loginUser,
@@ -51,4 +55,5 @@ export {
   createNewUser,
   updateUser,
   fetchUserAccount,
+  logoutUser,
 };
