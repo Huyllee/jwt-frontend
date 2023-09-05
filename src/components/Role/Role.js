@@ -60,7 +60,6 @@ const Role = (props) => {
       if (res && res.EC === 0) {
         toast.success(res.EM);
         childRef.current.fetchListRoles();
-        setListChild(dataChildDefault);
       }
     } else {
       toast.error("Input URL must not be empty...");
