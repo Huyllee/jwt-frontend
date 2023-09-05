@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { createNewRole } from "../../services/roleService";
+import TableRole from "./TableRole";
 
 const Role = (props) => {
   const dataChildDefault = {
@@ -13,6 +14,7 @@ const Role = (props) => {
   const [listChild, setListChild] = useState({
     child1: dataChildDefault,
   });
+  const childRef = useRef();
 
   const handleOnChangeInput = (name, value, key) => {
     let _listChild = _.cloneDeep(listChild);
@@ -57,6 +59,8 @@ const Role = (props) => {
       let res = await createNewRole(data);
       if (res && res.EC === 0) {
         toast.success(res.EM);
+        childRef.current.fetchListRoles();
+        setListChild(dataChildDefault);
       }
     } else {
       toast.error("Input URL must not be empty...");
@@ -70,7 +74,7 @@ const Role = (props) => {
   return (
     <div className="role-container">
       <div className="container">
-        <div className="mt-3">
+        <div className="adding-roles mt-3">
           <div className="title-role">
             <h4>Add a new role</h4>
           </div>
@@ -134,6 +138,10 @@ const Role = (props) => {
               </button>
             </div>
           </div>
+        </div>
+        <div className="mt-3">
+          <h4>List Current Roles</h4>
+          <TableRole ref={childRef} />
         </div>
       </div>
     </div>
