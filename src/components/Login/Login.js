@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./Login.scss";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loginUser } from "../../services/userService";
 import { UserContext } from "../../context/UserContext";
 
 const Login = (props) => {
-  const { loginContext } = React.useContext(UserContext);
+  const { user, loginContext } = React.useContext(UserContext);
 
   const [valueLogin, setValueLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -17,6 +17,12 @@ const Login = (props) => {
   const [objValidInput, setObjValidInput] = useState(defaultObjValidInput);
 
   let history = useHistory();
+
+  useEffect(() => {
+    if (user && user.isAuthenticated) {
+      history.push("/");
+    }
+  }, [user]);
 
   const handleCreateNewAccount = () => {
     history.push("/register");

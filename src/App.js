@@ -5,14 +5,21 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Oval } from "react-loader-spinner";
 import AppRoutes from "./routes/AppRoutes";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { UserContext } from "./context/UserContext";
+import { Scrollbars } from "react-custom-scrollbars";
 
 function App() {
   const { user } = useContext(UserContext);
+  const [scrollHeight, setScrollHeight] = useState();
+
+  useEffect(() => {
+    let windowHeight = window.innerHeight;
+    setScrollHeight(windowHeight);
+  }, [user]);
 
   return (
-    <>
+    <Scrollbars autoHide style={{ height: scrollHeight }}>
       <Router>
         {user && user.isLoading === true ? (
           <div className="loading-container">
@@ -51,7 +58,7 @@ function App() {
         pauseOnHover
         theme="light"
       />
-    </>
+    </Scrollbars>
   );
 }
 

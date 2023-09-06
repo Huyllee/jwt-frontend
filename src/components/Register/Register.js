@@ -3,8 +3,12 @@ import "./Register.scss";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { registerNewUser } from "../../services/userService";
+import { UserContext } from "../../context/UserContext";
+import { useEffect } from "react";
 
 const Register = (props) => {
+  const { user } = React.useContext(UserContext);
+
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [username, setUsername] = useState("");
@@ -21,6 +25,12 @@ const Register = (props) => {
   const [objCheckInput, setObjCheckInput] = useState(defaultValidInput);
 
   let history = useHistory();
+
+  useEffect(() => {
+    if (user && user.isAuthenticated) {
+      history.push("/");
+    }
+  }, [user]);
 
   const handleLogin = () => {
     history.push("/login");

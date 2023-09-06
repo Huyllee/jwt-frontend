@@ -24,7 +24,9 @@ const AppRoutes = (props) => {
         <Route path="/" exact>
           home
         </Route>
-        <Route path="*">404 Not Found</Route>
+        <Route path="*">
+          <div className="container">404 Not Found</div>
+        </Route>
       </Switch>
     </>
   );

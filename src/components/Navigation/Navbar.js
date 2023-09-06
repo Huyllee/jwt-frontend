@@ -29,7 +29,11 @@ const NavHeader = (props) => {
     }
   };
 
-  if ((user && user.isAuthenticated === true) || location.pathname === "/") {
+  if (
+    (user && user.isAuthenticated === true) ||
+    location.pathname === "/" ||
+    location.pathname === "/about"
+  ) {
     return (
       <>
         {isShow && (
@@ -40,11 +44,11 @@ const NavHeader = (props) => {
                   <img
                     className="logo-header"
                     src={Logo}
-                    width="40"
-                    height="40"
+                    width="50"
+                    height="30"
                     alt=""
                   ></img>
-                  JWT Management
+                  <span>JWT Management</span>
                 </NavLink>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
